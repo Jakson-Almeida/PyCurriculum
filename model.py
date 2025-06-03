@@ -92,9 +92,35 @@ class CVModel:
 """
     
     def generate_latex(self):
-        template = Template(self.load_template())
+        """
+        Generate LaTeX content from template and user data
+        Returns formatted LaTeX document as string
+        """
+        # Load the raw template (with escaped braces)
+        template = self.load_template()
         
         # Build content from visible sections
+        content = self.build_content_sections()
+        
+        # Format with named parameters for safety
+        try:
+            return template.format(
+                name_first=self.data["personal"]["name_first"],
+                name_last=self.data["personal"]["name_last"],
+                title=self.data["personal"]["title"],
+                address=self.data["personal"]["address"],
+                phone=self.data["personal"]["phone"],
+                email=self.data["personal"]["email"],
+                homepage=self.data["personal"]["homepage"],
+                linkedin=self.data["personal"]["linkedin"],
+                github=self.data["personal"]["github"],
+                content=content
+            )
+        except KeyError as e:
+            raise ValueError(f"Missing required personal info field: {e}") from e
+
+    def build_content_sections(self):
+        """Construct the LaTeX content for all visible sections"""
         content = ""
         section_order = [
             ("summary", "Summary"),
@@ -109,12 +135,80 @@ class CVModel:
         ]
         
         for section_key, section_title in section_order:
-            if self.section_visibility[section_key]:
-                content += f"\n% ======================\n% {section_title.upper()}\n% ======================\n"
-                content += f"\\section{{{section_title}}}\n"
-                content += self.sections[section_key] + "\n"
+            if self.section_visibility.get(section_key, True):
+                content += self.build_section(section_key, section_title)
         
-        return template.render(content=content, **self.personal_info)
+        return content
+
+    def build_section(self, section_key, section_title):
+        """Build individual section with header and content"""
+        return (
+            f"\n% ======================\n"
+            f"% {section_title.upper()}\n"
+            f"% ======================\n"
+            f"\\section{{{section_title}}}\n"
+            f"{self.data['sections'][section_key]}\n"
+        )
+
+    def generate_pdf(self):
+        """Generate PDF from LaTeX content"""
+        try:
+            self.progress.start(10)
+            self.status_var.set("Generating PDF...")
+            self.root.update()
+            
+            # Generate complete LaTeX document
+            latex_content = self.generate_latex()
+            
+            # Create temporary directory
+            with tempfile.TemporaryDirectory() as tmpdir:
+                tex_path = os.path.join(tmpdir, "cv.tex")
+                pdf_path = os.path.join(tmpdir, "cv.pdf")
+                
+                # Write LaTeX file
+                with open(tex_path, "w", encoding="utf-8") as f:
+                    f.write(latex_content)
+                
+                # Compile with XeLaTeX
+                result = subprocess.run(
+                    ["xelatex", "-interaction=nonstopmode", "-output-directory", tmpdir, tex_path],
+                    capture_output=True,
+                    text=True
+                )
+                
+                # Check result
+                if os.path.exists(pdf_path):
+                    self.open_pdf(pdf_path)
+                    self.status_var.set("PDF generated successfully")
+                    messagebox.showinfo("Success", "PDF generated successfully!")
+                else:
+                    error_msg = self.format_error_message(result)
+                    self.status_var.set("PDF generation failed")
+                    messagebox.showerror("LaTeX Error", error_msg)
+        
+        except Exception as e:
+            self.status_var.set("Error generating PDF")
+            messagebox.showerror("Error", f"An error occurred:\n{str(e)}")
+        finally:
+            self.progress.stop()
+            self.root.after(100, self.progress.stop)
+
+    def open_pdf(self, pdf_path):
+        """Open PDF using system default viewer"""
+        if os.name == 'nt':  # Windows
+            os.startfile(pdf_path)
+        elif os.name == 'posix':  # macOS/Linux
+            subprocess.run(["xdg-open", pdf_path])
+
+    def format_error_message(self, result):
+        """Format LaTeX compilation error message"""
+        return (
+            "PDF generation failed.\n\n"
+            "LaTeX Output:\n"
+            f"{result.stdout[:1000]}\n\n"
+            "Errors:\n"
+            f"{result.stderr[:1000]}"
+        )
     
     def compile_latex(self, latex_content, callback):
         try:
