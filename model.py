@@ -3,6 +3,7 @@ import json
 import tempfile
 import subprocess
 from pathlib import Path
+from jinja2 import Template
 
 # Default template path
 TEMPLATE_PATH = Path(__file__).parent / "templates" / "cv_template.tex"
@@ -91,7 +92,7 @@ class CVModel:
 """
     
     def generate_latex(self):
-        template = self.load_template()
+        template = Template(self.load_template())
         
         # Build content from visible sections
         content = ""
@@ -113,7 +114,7 @@ class CVModel:
                 content += f"\\section{{{section_title}}}\n"
                 content += self.sections[section_key] + "\n"
         
-        return template.format(content=content, **self.personal_info)
+        return template.render(content=content, **self.personal_info)
     
     def compile_latex(self, latex_content, callback):
         try:
