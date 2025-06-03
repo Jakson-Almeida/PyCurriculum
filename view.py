@@ -1,4 +1,5 @@
 import os
+import subprocess
 import tkinter as tk
 from tkinter import ttk, scrolledtext, filedialog
 
@@ -237,4 +238,4 @@ class CVEditorView:
         if os.name == 'nt':  # Windows
             os.startfile(path)
         elif os.name == 'posix':  # macOS, Linux
-            os.subprocess.run(["open", path] if os.uname().sysname == "Darwin" else ["xdg-open", path])
+            subprocess.run(["open", path] if os.uname().sysname == "Darwin" else ["xdg-open", path])
