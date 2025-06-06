@@ -1,0 +1,35 @@
+{
+  "personal": {
+    "name_first": "Pedro",
+    "name_last": "Colli",
+    "title": "Master Electrical Engineering Student",
+    "address": "Juiz de Fora, MG",
+    "phone": "(+55) 00~0000-0000",
+    "email": "your.email@example.com",
+    "homepage": "www.yourwebsite.com",
+    "linkedin": "your-linkedin-username",
+    "github": "your-github-username"
+  },
+  "sections": {
+    "summary": "Write a 3-5 sentence professional summary highlighting:\n- Your professional identity\n- Key skills/expertise\n- Career objectives\n- Unique value proposition",
+    "education": "\\cventry{2017--Present}{Degree Name}{University Name}{Location}{}{Additional details}",
+    "research": "\\cventry{2025--Present}{Project Title}{Institution}{Location}{}{\\begin{itemize}\\item Describe your role and contributions\\item Mention specific technologies/methods used\\end{itemize}}",
+    "experience": "\\cventry{2017--2022}{Job Title}{Company}{Location}{}{\\begin{itemize}\\item Describe your responsibilities\\item Highlight key achievements\\end{itemize}}",
+    "projects": "\\cvitem{2023--Present}{\\textbf{Project Name} Description of the project including purpose, technologies, and key features}",
+    "skills": "\\cvitem{Languages}{List programming languages}\\n\\cvitem{Frameworks}{List relevant frameworks}\\n\\cvitem{Tools}{List development tools}",
+    "awards": "\\cvitem{2024}{Award Name - Organization}",
+    "publications": "\\cvitem{2024}{Authors. \\\"Publication Title\\\". Conference/Journal, Year.}",
+    "languages": "\\cvitem{Portuguese}{Native}\\n\\cvitem{English}{Proficiency level}"
+  },
+  "visibility": {
+    "summary": true,
+    "education": true,
+    "research": true,
+    "experience": true,
+    "projects": true,
+    "skills": true,
+    "awards": true,
+    "publications": true,
+    "languages": true
+  }
+}
