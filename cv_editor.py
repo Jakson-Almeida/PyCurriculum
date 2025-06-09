@@ -6,6 +6,7 @@ import tempfile
 import threading
 import time
 from tkinter.font import Font
+import platform
 
 # Base LaTeX template with instructional comments
 LATEX_TEMPLATE = r"""\documentclass[11pt,a4paper,sans]{{moderncv}}
@@ -278,6 +279,28 @@ class CVEditor:
         # Run in a separate thread to prevent UI freeze
         threading.Thread(target=self.generate_pdf, daemon=True).start()
     
+    def find_xelatex(self):
+        if platform.system()!="Windows":
+            return "xelatex"
+        """Find XeLaTeX executable on Windows"""
+        # Common MikTeX installation paths
+        possible_paths = [
+            r"C:\Program Files\MiKTeX\miktex\bin\x64\xelatex.exe",
+            r"C:\Program Files (x86)\MiKTeX\miktex\bin\xelatex.exe",
+            r"C:\Users\{}\AppData\Local\Programs\MiKTeX\miktex\bin\x64\xelatex.exe".format(os.getenv("USERNAME")),
+        ]
+        
+        for path in possible_paths:
+            if os.path.exists(path):
+                return path
+        
+        # Try PATH environment variable as last resort
+        try:
+            subprocess.run(["xelatex", "--version"], capture_output=True, check=True)
+            return "xelatex"
+        except:
+            return None
+    
     def generate_pdf(self):
         try:
             # Build the content string with only visible sections
@@ -315,9 +338,13 @@ class CVEditor:
                 with open(tex_path, "w", encoding="utf-8") as f:
                     f.write(merged)
                 
+                xelatex_path = self.find_xelatex()
+                if not xelatex_path:
+                    raise FileNotFoundError("XeLaTeX not found. Please ensure MikTeX is installed.")
+                
                 # Compile with XeLaTeX
                 result = subprocess.run(
-                    ["xelatex", "-interaction=nonstopmode", "-output-directory", tmpdir, tex_path],
+                    [xelatex_path, "-interaction=nonstopmode", "-output-directory", tmpdir, tex_path],
                     capture_output=True,
                     text=True
                 )
