@@ -33,7 +33,7 @@
 3. **Clone this repository**:
    ```
    git clone https://github.com/Jakson-Almeida/PyCurriculum.git
-   cd latex-cv-editor
+   cd PyCurriculum
    ```
 
 ## Usage
