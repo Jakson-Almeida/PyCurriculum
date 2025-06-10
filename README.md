@@ -32,7 +32,7 @@
    - macOS: `brew install --cask mactex`
 3. **Clone this repository**:
    ```
-   git clone https://github.com/Jakson-Almeida/latex-cv-editor.git
+   git clone https://github.com/Jakson-Almeida/PyCurriculum.git
    cd latex-cv-editor
    ```
 
@@ -40,12 +40,16 @@
 
 1. Run the application:
    ```
+   python cv_editor.py
+   ```
+   or (beta version)
+   ```
    python app.py
    ```
-2. Fill in your personal information
-3. Edit each section with your content
-4. Toggle sections using the checkboxes
-5. Generate PDF:
+3. Fill in your personal information
+4. Edit each section with your content
+5. Toggle sections using the checkboxes
+6. Generate PDF:
    - Click "Generate PDF" button
    - First run may take longer as MikTeX installs required packages
 
@@ -81,7 +85,7 @@ Edit `templates/cv_template.tex` to change:
 ## Project Structure
 
 ```
-latex-cv-editor/
+PyCurriculum/
 ├── app.py                # Main application entry point
 ├── controller.py         # Application logic
 ├── model.py              # Data handling and LaTeX generation
