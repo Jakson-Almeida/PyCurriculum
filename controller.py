@@ -1,4 +1,5 @@
 import threading
+import shutil
 from model import CVModel
 from view import CVEditorView
 
@@ -49,9 +50,15 @@ class CVEditorController:
         
         if success:
             try:
-                self.view.open_pdf(pdf_path)
+                # Prompt user for save location
+                save_path = self.view.ask_pdf_save_path()
+                if save_path:
+                    shutil.copyfile(pdf_path, save_path)
+                    self.view.open_pdf(save_path)
+                else:
+                    self.view.show_message("PDF was generated but not saved.")
             except Exception as e:
-                self.view.show_message(f"Error opening PDF: {str(e)}", True)
+                self.view.show_message(f"Error saving/opening PDF: {str(e)}", True)
         else:
             self.view.show_message(message, True)
     
