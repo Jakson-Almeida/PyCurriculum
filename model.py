@@ -23,7 +23,10 @@ class CVModel:
         }
         
         self.sections = {
-            "summary": "Write a 3-5 sentence professional summary...",
+            "summary": (
+                "Replace this text with your professional summary. Example:\n"
+                "Highly motivated and results-oriented [Your Profession/Industry] professional with [Number] years of experience in [mention 2-3 key skills or areas of expertise like Project Management, Customer Service, Software Development, etc.]. Proven ability to [mention a key achievement or responsibility, e.g., 'increase sales by X%', 'successfully lead cross-functional teams,' or 'develop innovative solutions']. Seeking to leverage my expertise in [mention specific skill or area] to contribute to the success of [Company Name/Type of Company if not specific]."
+            ),
             "education": [
                 {
                     "degree": "Degree Name",
