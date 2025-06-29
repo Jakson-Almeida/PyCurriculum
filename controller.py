@@ -50,8 +50,11 @@ class CVEditorController:
         
         if success:
             try:
-                # Prompt user for save location
-                save_path = self.view.ask_pdf_save_path()
+                # Get user info for filename
+                first_name = self.model.personal_info.get("name_first", "")
+                last_name = self.model.personal_info.get("name_last", "")
+                # Prompt user for save location with suggested filename
+                save_path = self.view.ask_pdf_save_path(first_name, last_name)
                 if save_path:
                     shutil.copyfile(pdf_path, save_path)
                     self.view.open_pdf(save_path)

@@ -234,10 +234,15 @@ class CVEditorView:
             filetypes=[("CV Project", "*.cvproj"), ("All Files", "*.*")]
         )
     
-    def ask_pdf_save_path(self):
+    def ask_pdf_save_path(self, first_name=None, last_name=None):
+        if first_name and last_name:
+            initialfile = f"{last_name}_{first_name}_Resume.pdf"
+        else:
+            initialfile = "Resume.pdf"
         return filedialog.asksaveasfilename(
             defaultextension=".pdf",
-            filetypes=[("PDF Document", "*.pdf"), ("All Files", "*.*")]
+            filetypes=[("PDF Document", "*.pdf"), ("All Files", "*.*")],
+            initialfile=initialfile
         )
     
     def open_pdf(self, path):
