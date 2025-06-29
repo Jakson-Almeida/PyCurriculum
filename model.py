@@ -76,14 +76,14 @@ class CVModel:
 \usepackage{{fontspec}}
 \setmainfont{{Arial}}
 
-\name{{name_first}}{{name_last}}
-\title{{title}}
-\address{{address}}
-\phone{{phone}}
-\email{{email}}
-\homepage{{homepage}}
-\social[linkedin]{{linkedin}}
-\social[github]{{github}}
+\name{{{name_first}}}{{{name_last}}}
+\title{{{title}}}
+\address{{{address}}}
+\phone{{{phone}}}
+\email{{{email}}}
+\homepage{{{homepage}}}
+\social[linkedin]{{{linkedin}}}
+\social[github]{{{github}}}
 
 \begin{{document}}
 \makecvtitle
@@ -103,18 +103,7 @@ class CVModel:
         
         # Format with named parameters for safety
         try:
-            return template.format(
-                name_first=self.personal_info["name_first"],
-                name_last=self.personal_info["name_last"],
-                title=self.personal_info["title"],
-                address=self.personal_info["address"],
-                phone=self.personal_info["phone"],
-                email=self.personal_info["email"],
-                homepage=self.personal_info["homepage"],
-                linkedin=self.personal_info["linkedin"],
-                github=self.personal_info["github"],
-                content=content
-            )
+            return template.format(content=content, **self.personal_info)
         except KeyError as e:
             raise ValueError(f"Missing required personal info field: {e}") from e
 
