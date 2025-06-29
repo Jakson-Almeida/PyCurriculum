@@ -201,7 +201,7 @@ class CVEditorView:
                 frame = ttk.Frame(tab)
                 frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=(0, 10))
                 setattr(self, f"{key}_list_frame", frame)
-                getattr(self, f"refresh_{key}_list", self._make_refresh_list(key, multi_entry_sections[key]))()
+                self._make_refresh_list(key, multi_entry_sections[key])()
                 btn_frame = ttk.Frame(tab)
                 btn_frame.pack(fill=tk.X, padx=10, pady=5)
                 ttk.Button(btn_frame, text=f"Add {name}", command=lambda k=key: self._entry_dialog(k, multi_entry_sections[k])).pack(side=tk.LEFT)
@@ -266,10 +266,6 @@ class CVEditorView:
     def _delete_entry(self, key, idx):
         del self.controller.model.sections[key][idx]
         getattr(self, f"refresh_{key}_list")()
-
-    # Dynamically create refresh methods for each multi-entry section
-    for sec in ["education", "experience", "research", "projects", "skills", "awards", "publications", "languages"]:
-        exec(f"refresh_{sec}_list = _make_refresh_list('{sec}', multi_entry_sections['{sec}'])")
 
     def create_status_bar(self):
         self.status_var = tk.StringVar(value="Ready")

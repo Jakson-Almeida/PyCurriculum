@@ -176,137 +176,128 @@ class CVModel:
             latex = ""
             for edu in entries:
                 latex += (
-                    f"\\cventry{{{edu['start']}--{edu['end']}}}"
-                    f"{{{edu['degree']}}}"
-                    f"{{{edu['institution']}}}"
-                    f"{{}}"  # Location (optional, left blank)
-                    f"{{}}"  # Empty field
-                    f"{{{edu['details']}}}\n"
+                    rf"\cventry{{{edu['start']}--{edu['end']}}}"
+                    rf"{{{edu['degree']}}}"
+                    rf"{{{edu['institution']}}}"
+                    rf"{{}}"  # Location (optional, left blank)
+                    rf"{{}}"  # Empty field
+                    rf"{{{edu['details']}}}\n"
                 )
-            return (
-                f"\n% ======================
+            return rf"""
+% ======================
 % {section_title.upper()}
 % ======================
-"
-                f"\\section{{{section_title}}}\n"
-                f"{latex}\n"
-            )
+\section{{{section_title}}}
+{latex}
+"""
         elif section_key == "experience":
             entries = self.sections["experience"]
             latex = ""
             for exp in entries:
                 latex += (
-                    f"\\cventry{{{exp['start']}--{exp['end']}}}"
-                    f"{{{exp['job_title']}}}"
-                    f"{{{exp['company']}}}"
-                    f"{{}}"  # Location (optional, left blank)
-                    f"{{}}"  # Empty field
-                    f"{{{exp['details']}}}\n"
+                    rf"\cventry{{{exp['start']}--{exp['end']}}}"
+                    rf"{{{exp['job_title']}}}"
+                    rf"{{{exp['company']}}}"
+                    rf"{{}}"  # Location (optional, left blank)
+                    rf"{{}}"  # Empty field
+                    rf"{{{exp['details']}}}\n"
                 )
-            return (
-                f"\n% ======================
+            return rf"""
+% ======================
 % {section_title.upper()}
 % ======================
-"
-                f"\\section{{{section_title}}}\n"
-                f"{latex}\n"
-            )
+\section{{{section_title}}}
+{latex}
+"""
         elif section_key == "research":
             entries = self.sections["research"]
             latex = ""
             for res in entries:
                 latex += (
-                    f"\\cventry{{{res['start']}--{res['end']}}}"
-                    f"{{{res['project_title']}}}"
-                    f"{{{res['institution']}}}"
-                    f"{{}}"  # Location (optional, left blank)
-                    f"{{}}"  # Empty field
-                    f"{{{res['details']}}}\n"
+                    rf"\cventry{{{res['start']}--{res['end']}}}"
+                    rf"{{{res['project_title']}}}"
+                    rf"{{{res['institution']}}}"
+                    rf"{{}}"  # Location (optional, left blank)
+                    rf"{{}}"  # Empty field
+                    rf"{{{res['details']}}}\n"
                 )
-            return (
-                f"\n% ======================
+            return rf"""
+% ======================
 % {section_title.upper()}
 % ======================
-"
-                f"\\section{{{section_title}}}\n"
-                f"{latex}\n"
-            )
+\section{{{section_title}}}
+{latex}
+"""
         elif section_key == "projects":
             entries = self.sections["projects"]
             latex = ""
             for proj in entries:
                 latex += (
-                    f"\\cvitem{{{proj['years']}}}{{\\textbf{{{proj['project_name']}}} {proj['description']}}}\n"
+                    rf"\cvitem{{{proj['years']}}}{{\textbf{{{proj['project_name']}}} {proj['description']}}}\n"
                 )
-            return (
-                f"\n% ======================
+            return rf"""
+% ======================
 % {section_title.upper()}
 % ======================
-"
-                f"\\section{{{section_title}}}\n"
-                f"{latex}\n"
-            )
+\section{{{section_title}}}
+{latex}
+"""
         elif section_key == "skills":
             entries = self.sections["skills"]
             latex = ""
             for skill in entries:
-                latex += f"\\cvitem{{{skill['category']}}}{{{skill['items']}}}\n"
-            return (
-                f"\n% ======================
+                latex += rf"\cvitem{{{skill['category']}}}{{{skill['items']}}}\n"
+            return rf"""
+% ======================
 % {section_title.upper()}
 % ======================
-"
-                f"\\section{{{section_title}}}\n"
-                f"{latex}\n"
-            )
+\section{{{section_title}}}
+{latex}
+"""
         elif section_key == "awards":
             entries = self.sections["awards"]
             latex = ""
             for award in entries:
-                latex += f"\\cvitem{{{award['year']}}}{{{award['award_name']} - {award['organization']}}}\n"
-            return (
-                f"\n% ======================
+                latex += rf"\cvitem{{{award['year']}}}{{{award['award_name']} - {award['organization']}}}\n"
+            return rf"""
+% ======================
 % {section_title.upper()}
 % ======================
-"
-                f"\\section{{{section_title}}}\n"
-                f"{latex}\n"
-            )
+\section{{{section_title}}}
+{latex}
+"""
         elif section_key == "publications":
             entries = self.sections["publications"]
             latex = ""
             for pub in entries:
-                latex += f"\\cvitem{{{pub['year']}}}{{{pub['authors']}. \"{pub['title']}\". {pub['venue']}, {pub['year']}.}}\n"
-            return (
-                f"\n% ======================
+                latex += rf"\cvitem{{{pub['year']}}}{{{pub['authors']}. \"{pub['title']}\". {pub['venue']}, {pub['year']}.}}\n"
+            return rf"""
+% ======================
 % {section_title.upper()}
 % ======================
-"
-                f"\\section{{{section_title}}}\n"
-                f"{latex}\n"
-            )
+\section{{{section_title}}}
+{latex}
+"""
         elif section_key == "languages":
             entries = self.sections["languages"]
             latex = ""
             for lang in entries:
-                latex += f"\\cvitem{{{lang['language']}}}{{{lang['proficiency']}}}\n"
-            return (
-                f"\n% ======================
+                latex += rf"\cvitem{{{lang['language']}}}{{{lang['proficiency']}}}\n"
+            return rf"""
+% ======================
 % {section_title.upper()}
 % ======================
-"
-                f"\\section{{{section_title}}}\n"
-                f"{latex}\n"
-            )
+\section{{{section_title}}}
+{latex}
+"""
         else:
-            return (
-                f"\n% ======================
+            return rf"""
+% ======================
 % {section_title.upper()}
 % ======================
-"
-                f"\\section{{{section_title}}}\n"
-                f"{self.sections[section_key]}\n"
-            )
+\section{{{section_title}}}
+{self.sections[section_key]}
+"""
 
     def compile_latex(self, latex_content, callback):
         """Compile LaTeX content to PDF and call callback with result"""
