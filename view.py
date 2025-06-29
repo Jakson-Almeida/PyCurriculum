@@ -234,6 +234,12 @@ class CVEditorView:
             filetypes=[("CV Project", "*.cvproj"), ("All Files", "*.*")]
         )
     
+    def ask_pdf_save_path(self):
+        return filedialog.asksaveasfilename(
+            defaultextension=".pdf",
+            filetypes=[("PDF Document", "*.pdf"), ("All Files", "*.*")]
+        )
+    
     def open_pdf(self, path):
         if os.name == 'nt':  # Windows
             os.startfile(path)
