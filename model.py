@@ -24,14 +24,55 @@ class CVModel:
         
         self.sections = {
             "summary": "Write a 3-5 sentence professional summary...",
-            "education": r"\cventry{2017--Present}{Degree Name}{University Name}{Location}{}{Additional details}",
-            "research": r"\cventry{2025--Present}{Project Title}{Institution}{Location}{}{\begin{itemize}\item Describe your role...\end{itemize}}",
-            "experience": r"\cventry{2017--2022}{Job Title}{Company}{Location}{}{\begin{itemize}\item Describe your responsibilities...\end{itemize}}",
-            "projects": r"\cvitem{2023--Present}{\textbf{Project Name} Description...}",
-            "skills": r"\cvitem{Languages}{List programming languages}\n\cvitem{Frameworks}{List relevant frameworks}",
-            "awards": r"\cvitem{2024}{Award Name - Organization}",
-            "publications": r"\cvitem{2024}{Authors. \"Publication Title\". Conference/Journal, Year.}",
-            "languages": r"\cvitem{Portuguese}{Native}\n\cvitem{English}{Proficiency level}"
+            "education": [
+                {
+                    "degree": "Degree Name",
+                    "institution": "University Name",
+                    "start": "2017",
+                    "end": "Present",
+                    "details": "Additional details"
+                }
+            ],
+            "experience": [
+                {
+                    "job_title": "Job Title",
+                    "company": "Company",
+                    "start": "2017",
+                    "end": "2022",
+                    "details": "Describe your responsibilities..."
+                }
+            ],
+            "research": [
+                {
+                    "project_title": "Project Title",
+                    "institution": "Institution",
+                    "start": "2025",
+                    "end": "Present",
+                    "details": "Describe your role and contributions"
+                }
+            ],
+            "projects": [
+                {
+                    "project_name": "Project Name",
+                    "years": "2023--Present",
+                    "description": "Description of the project including purpose, technologies, and key features"
+                }
+            ],
+            "skills": [
+                {"category": "Languages", "items": "Python, C++, Java"},
+                {"category": "Frameworks", "items": "Django, React"},
+                {"category": "Tools", "items": "Git, Docker"}
+            ],
+            "awards": [
+                {"year": "2024", "award_name": "Award Name", "organization": "Organization"}
+            ],
+            "publications": [
+                {"year": "2024", "title": "Publication Title", "authors": "Authors", "venue": "Conference/Journal"}
+            ],
+            "languages": [
+                {"language": "Portuguese", "proficiency": "Native"},
+                {"language": "English", "proficiency": "Proficiency level"}
+            ]
         }
         
         self.section_visibility = {
@@ -130,13 +171,142 @@ class CVModel:
 
     def build_section(self, section_key, section_title):
         """Build individual section with header and content"""
-        return (
-            f"\n% ======================\n"
-            f"% {section_title.upper()}\n"
-            f"% ======================\n"
-            f"\\section{{{section_title}}}\n"
-            f"{self.sections[section_key]}\n"
-        )
+        if section_key == "education":
+            entries = self.sections["education"]
+            latex = ""
+            for edu in entries:
+                latex += (
+                    f"\\cventry{{{edu['start']}--{edu['end']}}}"
+                    f"{{{edu['degree']}}}"
+                    f"{{{edu['institution']}}}"
+                    f"{{}}"  # Location (optional, left blank)
+                    f"{{}}"  # Empty field
+                    f"{{{edu['details']}}}\n"
+                )
+            return (
+                f"\n% ======================
+% {section_title.upper()}
+% ======================
+"
+                f"\\section{{{section_title}}}\n"
+                f"{latex}\n"
+            )
+        elif section_key == "experience":
+            entries = self.sections["experience"]
+            latex = ""
+            for exp in entries:
+                latex += (
+                    f"\\cventry{{{exp['start']}--{exp['end']}}}"
+                    f"{{{exp['job_title']}}}"
+                    f"{{{exp['company']}}}"
+                    f"{{}}"  # Location (optional, left blank)
+                    f"{{}}"  # Empty field
+                    f"{{{exp['details']}}}\n"
+                )
+            return (
+                f"\n% ======================
+% {section_title.upper()}
+% ======================
+"
+                f"\\section{{{section_title}}}\n"
+                f"{latex}\n"
+            )
+        elif section_key == "research":
+            entries = self.sections["research"]
+            latex = ""
+            for res in entries:
+                latex += (
+                    f"\\cventry{{{res['start']}--{res['end']}}}"
+                    f"{{{res['project_title']}}}"
+                    f"{{{res['institution']}}}"
+                    f"{{}}"  # Location (optional, left blank)
+                    f"{{}}"  # Empty field
+                    f"{{{res['details']}}}\n"
+                )
+            return (
+                f"\n% ======================
+% {section_title.upper()}
+% ======================
+"
+                f"\\section{{{section_title}}}\n"
+                f"{latex}\n"
+            )
+        elif section_key == "projects":
+            entries = self.sections["projects"]
+            latex = ""
+            for proj in entries:
+                latex += (
+                    f"\\cvitem{{{proj['years']}}}{{\\textbf{{{proj['project_name']}}} {proj['description']}}}\n"
+                )
+            return (
+                f"\n% ======================
+% {section_title.upper()}
+% ======================
+"
+                f"\\section{{{section_title}}}\n"
+                f"{latex}\n"
+            )
+        elif section_key == "skills":
+            entries = self.sections["skills"]
+            latex = ""
+            for skill in entries:
+                latex += f"\\cvitem{{{skill['category']}}}{{{skill['items']}}}\n"
+            return (
+                f"\n% ======================
+% {section_title.upper()}
+% ======================
+"
+                f"\\section{{{section_title}}}\n"
+                f"{latex}\n"
+            )
+        elif section_key == "awards":
+            entries = self.sections["awards"]
+            latex = ""
+            for award in entries:
+                latex += f"\\cvitem{{{award['year']}}}{{{award['award_name']} - {award['organization']}}}\n"
+            return (
+                f"\n% ======================
+% {section_title.upper()}
+% ======================
+"
+                f"\\section{{{section_title}}}\n"
+                f"{latex}\n"
+            )
+        elif section_key == "publications":
+            entries = self.sections["publications"]
+            latex = ""
+            for pub in entries:
+                latex += f"\\cvitem{{{pub['year']}}}{{{pub['authors']}. \"{pub['title']}\". {pub['venue']}, {pub['year']}.}}\n"
+            return (
+                f"\n% ======================
+% {section_title.upper()}
+% ======================
+"
+                f"\\section{{{section_title}}}\n"
+                f"{latex}\n"
+            )
+        elif section_key == "languages":
+            entries = self.sections["languages"]
+            latex = ""
+            for lang in entries:
+                latex += f"\\cvitem{{{lang['language']}}}{{{lang['proficiency']}}}\n"
+            return (
+                f"\n% ======================
+% {section_title.upper()}
+% ======================
+"
+                f"\\section{{{section_title}}}\n"
+                f"{latex}\n"
+            )
+        else:
+            return (
+                f"\n% ======================
+% {section_title.upper()}
+% ======================
+"
+                f"\\section{{{section_title}}}\n"
+                f"{self.sections[section_key]}\n"
+            )
 
     def compile_latex(self, latex_content, callback):
         """Compile LaTeX content to PDF and call callback with result"""

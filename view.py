@@ -117,14 +117,61 @@ class CVEditorView:
         sections = [
             ("Summary", "summary", "Write a 3-5 sentence professional summary"),
             ("Education", "education", "List your degrees and certifications"),
-            ("Research", "research", "Describe your research experience"),
             ("Experience", "experience", "Detail your professional work history"),
+            ("Research", "research", "Describe your research experience"),
             ("Projects", "projects", "Showcase your open-source projects"),
             ("Skills", "skills", "List your technical skills"),
             ("Awards", "awards", "Highlight your achievements"),
             ("Publications", "publications", "List your academic publications"),
             ("Languages", "languages", "List languages you speak")
         ]
+        multi_entry_sections = {
+            "education": [
+                ("Degree", "degree"),
+                ("Institution", "institution"),
+                ("Start Year", "start"),
+                ("End Year", "end"),
+                ("Details", "details")
+            ],
+            "experience": [
+                ("Job Title", "job_title"),
+                ("Company", "company"),
+                ("Start Year", "start"),
+                ("End Year", "end"),
+                ("Details", "details")
+            ],
+            "research": [
+                ("Project Title", "project_title"),
+                ("Institution", "institution"),
+                ("Start Year", "start"),
+                ("End Year", "end"),
+                ("Details", "details")
+            ],
+            "projects": [
+                ("Project Name", "project_name"),
+                ("Years", "years"),
+                ("Description", "description")
+            ],
+            "skills": [
+                ("Category", "category"),
+                ("Items", "items")
+            ],
+            "awards": [
+                ("Year", "year"),
+                ("Award Name", "award_name"),
+                ("Organization", "organization")
+            ],
+            "publications": [
+                ("Year", "year"),
+                ("Title", "title"),
+                ("Authors", "authors"),
+                ("Venue", "venue")
+            ],
+            "languages": [
+                ("Language", "language"),
+                ("Proficiency", "proficiency")
+            ]
+        }
         
         for name, key, tip in sections:
             tab = ttk.Frame(self.notebook)
@@ -149,22 +196,81 @@ class CVEditorView:
             chk.pack(side=tk.RIGHT, padx=10)
             self.section_visibility[key] = (var, chk)
             
-            # Text area with scrollbar
-            text_frame = ttk.Frame(tab)
-            text_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=(0, 10))
-            
-            text_area = scrolledtext.ScrolledText(text_frame, wrap=tk.WORD, 
-                                                font=("Consolas", 10), 
-                                                bg="#f8f9fa", padx=10, pady=10)
-            text_area.pack(fill=tk.BOTH, expand=True)
-            text_area.bind("<KeyRelease>", lambda e, k=key: self.controller.update_section(k, e.widget.get("1.0", tk.END)))
-            
-            # Add tooltip to text area
-            text_area.bind("<Enter>", lambda e, t=tip: self.show_tooltip(e, t))
-            text_area.bind("<Leave>", self.hide_tooltip)
-            
-            self.section_editors[key] = text_area
-    
+            if key in multi_entry_sections:
+                # Pretty UI for multi-entry sections
+                frame = ttk.Frame(tab)
+                frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=(0, 10))
+                setattr(self, f"{key}_list_frame", frame)
+                getattr(self, f"refresh_{key}_list", self._make_refresh_list(key, multi_entry_sections[key]))()
+                btn_frame = ttk.Frame(tab)
+                btn_frame.pack(fill=tk.X, padx=10, pady=5)
+                ttk.Button(btn_frame, text=f"Add {name}", command=lambda k=key: self._entry_dialog(k, multi_entry_sections[k])).pack(side=tk.LEFT)
+            else:
+                # Text area with scrollbar for summary
+                text_frame = ttk.Frame(tab)
+                text_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=(0, 10))
+                text_area = scrolledtext.ScrolledText(text_frame, wrap=tk.WORD, 
+                                                    font=("Consolas", 10), 
+                                                    bg="#f8f9fa", padx=10, pady=10)
+                text_area.pack(fill=tk.BOTH, expand=True)
+                text_area.bind("<KeyRelease>", lambda e, k=key: self.controller.update_section(k, e.widget.get("1.0", tk.END)))
+                text_area.bind("<Enter>", lambda e, t=tip: self.show_tooltip(e, t))
+                text_area.bind("<Leave>", self.hide_tooltip)
+                self.section_editors[key] = text_area
+
+    def _make_refresh_list(self, key, fields):
+        def refresh():
+            frame = getattr(self, f"{key}_list_frame")
+            for widget in frame.winfo_children():
+                widget.destroy()
+            # Table header
+            header = ttk.Frame(frame)
+            header.pack(fill=tk.X)
+            for i, (col, _) in enumerate(fields + [("Actions", None)]):
+                ttk.Label(header, text=col, font=("Arial", 10, "bold")).grid(row=0, column=i, padx=5, pady=2)
+            # List entries
+            for idx, entry in enumerate(self.controller.model.sections[key]):
+                row = ttk.Frame(frame)
+                row.pack(fill=tk.X, pady=2)
+                for i, (_, field) in enumerate(fields):
+                    ttk.Label(row, text=entry.get(field, "")).grid(row=0, column=i, padx=5)
+                ttk.Button(row, text="Edit", command=lambda i=idx, k=key, f=fields: self._entry_dialog(k, f, i)).grid(row=0, column=len(fields), padx=2)
+                ttk.Button(row, text="Delete", command=lambda i=idx, k=key: self._delete_entry(k, i)).grid(row=0, column=len(fields)+1, padx=2)
+        return refresh
+
+    def _entry_dialog(self, key, fields, idx=None):
+        dialog = tk.Toplevel(self.root)
+        dialog.title(f"{key.capitalize()} Entry")
+        dialog.geometry("400x400")
+        dialog.grab_set()
+        entries = {}
+        entry_data = self.controller.model.sections[key][idx] if idx is not None else None
+        for i, (label, field) in enumerate(fields):
+            ttk.Label(dialog, text=label).pack(anchor=tk.W, padx=10, pady=(10 if i==0 else 2, 2))
+            entry = ttk.Entry(dialog, width=40)
+            entry.pack(padx=10, pady=2)
+            if entry_data:
+                entry.insert(0, entry_data.get(field, ""))
+            entries[field] = entry
+        def save():
+            new_entry = {k: e.get() for k, e in entries.items()}
+            if idx is not None:
+                self.controller.model.sections[key][idx] = new_entry
+            else:
+                self.controller.model.sections[key].append(new_entry)
+            dialog.destroy()
+            getattr(self, f"refresh_{key}_list")()
+        ttk.Button(dialog, text="Save", command=save).pack(pady=10)
+        ttk.Button(dialog, text="Cancel", command=dialog.destroy).pack()
+
+    def _delete_entry(self, key, idx):
+        del self.controller.model.sections[key][idx]
+        getattr(self, f"refresh_{key}_list")()
+
+    # Dynamically create refresh methods for each multi-entry section
+    for sec in ["education", "experience", "research", "projects", "skills", "awards", "publications", "languages"]:
+        exec(f"refresh_{sec}_list = _make_refresh_list('{sec}', multi_entry_sections['{sec}'])")
+
     def create_status_bar(self):
         self.status_var = tk.StringVar(value="Ready")
         status_bar = ttk.Label(self.root, textvariable=self.status_var, 
